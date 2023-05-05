@@ -41,7 +41,7 @@ public class NestItem extends Item {
     }
 
     private static void spawnLoot(ServerWorld world, PlayerEntity player) {
-        final LootTable table = world.getServer().getLootManager().getTable(new Identifier(BirdsNests.MODID, "nest/nest_loot"));
+        final LootTable table = world.getServer().getLootManager().getLootTable(new Identifier(BirdsNests.MODID, "nest/nest_loot"));
         final List<ItemStack> loot = table.generateLoot(new LootContext.Builder(world).build(LootContextType.create().build()));
         if (!loot.isEmpty()) {
             final Random random  = player.getRandom();

@@ -24,7 +24,15 @@ public class BirdsNests implements ModInitializer {
 
     public static final String MODID = "birdsnests";
     public static final Logger LOGGER = LoggerFactory.getLogger(BirdsNests.class);
-    private static final List<Identifier> LOOT_TABLE_IDENTIFIERS = ImmutableList.of(Blocks.OAK_LEAVES.getLootTableId(), Blocks.SPRUCE_LEAVES.getLootTableId(), Blocks.BIRCH_LEAVES.getLootTableId(), Blocks.JUNGLE_LEAVES.getLootTableId(), Blocks.ACACIA_LEAVES.getLootTableId(), Blocks.DARK_OAK_LEAVES.getLootTableId());
+    private static final List<Identifier> LOOT_TABLE_IDENTIFIERS = ImmutableList.of(
+            Blocks.OAK_LEAVES.getLootTableId(),
+            Blocks.SPRUCE_LEAVES.getLootTableId(),
+            Blocks.BIRCH_LEAVES.getLootTableId(),
+            Blocks.JUNGLE_LEAVES.getLootTableId(),
+            Blocks.ACACIA_LEAVES.getLootTableId(),
+            Blocks.DARK_OAK_LEAVES.getLootTableId(),
+            Blocks.CHERRY_LEAVES.getLootTableId()
+    );
     public static ConfigFile configFile;
     public static Item nest;
 
