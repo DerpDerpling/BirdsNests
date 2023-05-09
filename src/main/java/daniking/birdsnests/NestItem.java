@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -40,9 +41,20 @@ public class NestItem extends Item {
         return super.use(world, user, hand);
     }
 
+
+
     private void spawnLoot(ServerWorld world, PlayerEntity player) {
         final LootTable table = world.getServer().getLootManager().getTable(new Identifier(BirdsNests.MODID, "nest/nest_loot"));
-        final List<ItemStack> loot = table.generateLoot(new LootContext.Builder(world).build(LootContextType.create().build()));
+        LootContextType MY_LOOT_CONTEXT_TYPE = new LootContextType.Builder()
+                .allow(LootContextParameters.ORIGIN)
+                .allow(LootContextParameters.BLOCK_STATE)
+                .allow(LootContextParameters.TOOL)
+                .allow(LootContextParameters.THIS_ENTITY)
+                .allow(LootContextParameters.LAST_DAMAGE_PLAYER)
+                .allow(LootContextParameters.KILLER_ENTITY)
+                .allow(LootContextParameters.DIRECT_KILLER_ENTITY)
+                .build();
+        final List<ItemStack> loot = table.generateLoot(new LootContext.Builder(world).build(MY_LOOT_CONTEXT_TYPE));
         if (!loot.isEmpty()) {
             final Random random = world.getRandom();
             for (final ItemStack entry : loot) {
@@ -52,4 +64,6 @@ public class NestItem extends Item {
             }
         }
     }
+
+
 }

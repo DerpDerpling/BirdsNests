@@ -10,21 +10,26 @@ import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.loot.ConstantLootTableRange;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class BirdsNests implements ModInitializer {
 
     public static final String MODID = "birdsnests";
-    public static final Logger LOGGER = LoggerFactory.getLogger(BirdsNests.class);
-    private static final List<Identifier> LOOT_TABLE_IDENTIFIERS = ImmutableList.of(Blocks.OAK_LEAVES.getLootTableId(), Blocks.SPRUCE_LEAVES.getLootTableId(), Blocks.BIRCH_LEAVES.getLootTableId(), Blocks.JUNGLE_LEAVES.getLootTableId(), Blocks.ACACIA_LEAVES.getLootTableId(), Blocks.DARK_OAK_LEAVES.getLootTableId());
+    public static final Logger LOGGER = LogManager.getLogger(BirdsNests.class);
+    private static final List<Identifier> LOOT_TABLE_IDENTIFIERS = ImmutableList.of(Blocks.OAK_LEAVES.getLootTableId(),
+            Blocks.SPRUCE_LEAVES.getLootTableId(),
+            Blocks.BIRCH_LEAVES.getLootTableId(),
+            Blocks.JUNGLE_LEAVES.getLootTableId(),
+            Blocks.ACACIA_LEAVES.getLootTableId(),
+            Blocks.DARK_OAK_LEAVES.getLootTableId());
     public static ConfigFile configFile;
     public static Item nest;
 
@@ -35,25 +40,33 @@ public class BirdsNests implements ModInitializer {
         // Done for late static initialization
         nest = new NestItem(new FabricItemSettings().group(ItemGroup.MISC).maxCount(configFile.maxCount));
         Registry.register(Registry.ITEM, new Identifier(MODID, "nest"), nest);
-        registerLootTables();
+        registerLootTable(Blocks.OAK_LEAVES.getLootTableId());
+        registerLootTable(Blocks.SPRUCE_LEAVES.getLootTableId());
+        registerLootTable(Blocks.BIRCH_LEAVES.getLootTableId());
+        registerLootTable(Blocks.JUNGLE_LEAVES.getLootTableId());
+        registerLootTable(Blocks.ACACIA_LEAVES.getLootTableId());
+        registerLootTable(Blocks.DARK_OAK_LEAVES.getLootTableId());
         LOGGER.info("BirdsNests Initialized");
     }
 
-    static void registerLootTables() {
-        LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, supplier, setter) -> {
-            for (final Identifier entry : LOOT_TABLE_IDENTIFIERS) {
-                if (id.equals(entry)) {
-                    supplier.withPool(buildLoot().build());
-                    break;
-                }
+    private static void registerLootTable(Identifier lootTableId) {
+        LOOT_TABLE_IDENTIFIERS.forEach(identifier -> {
+            if (identifier.equals(lootTableId)) {
+                FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder()
+                        .rolls(ConstantLootTableRange.create(1))
+                        .withCondition(RandomChanceLootCondition.builder((float) configFile.nestDropChance).build())
+                        .withEntry(ItemEntry.builder(nest).build());
+
+                Registry.BLOCK.forEach(block -> {
+                    if (block.getLootTableId().equals(lootTableId)) {
+                        LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, supplier, setter) -> {
+                            if (id.equals(lootTableId)) {
+                                supplier.withPool(poolBuilder.build());
+                            }
+                        });
+                    }
+                });
             }
         });
-    }
-
-    static FabricLootPoolBuilder buildLoot() {
-        return FabricLootPoolBuilder.builder()
-                .rolls(ConstantLootNumberProvider.create(1))
-                .withCondition(RandomChanceLootCondition.builder((float) configFile.nestDropChance).build())
-                .withEntry(ItemEntry.builder(nest).build());
     }
 }
