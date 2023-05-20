@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -42,7 +42,7 @@ public class NestItem extends Item {
 
     private static void spawnLoot(ServerWorld world, PlayerEntity player) {
         final LootTable table = world.getServer().getLootManager().getLootTable(new Identifier(BirdsNests.MODID, "nest/nest_loot"));
-        final List<ItemStack> loot = table.generateLoot(new LootContext.Builder(world).build(LootContextType.create().build()));
+        final List<ItemStack> loot = table.generateLoot(new LootContextParameterSet.Builder(world).build(LootContextType.create().build()));
         if (!loot.isEmpty()) {
             final Random random  = player.getRandom();
             for (final ItemStack entry : loot) {
